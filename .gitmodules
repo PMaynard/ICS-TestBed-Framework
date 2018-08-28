@@ -1,0 +1,6 @@
+[submodule "UA-Java"]
+	path = UA-Java
+	url = https://github.com/OPCFoundation/UA-Java.git
+[submodule "attacks/PoC2013"]
+	path = attacks/PoC2013
+	url = https://github.com/atimorin/PoC2013/

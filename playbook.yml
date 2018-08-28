@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: yes
+  tasks: 
+    - name: Configure for packaging
+      include_role:
+        name: vagrant-box
+      when: "'buildImage' in ansible_hostname"
+
+    - name: Setup Environmnet for TestBed
+      include_role: 
+        name: node
+      when: "'buildImage' in ansible_hostname"
+
+    - name: Startup RTU
+      shell: "tmux new -d cat /vagrant/scripts/rtu.cmd | java -jar /vagrant/node/target/node-1.0.jar"
+      when: "'rtu' in ansible_hostname"
+
+    - name: Startup HMI
+      shell: "tmux new -d java -jar cat /vagrant/scripts/hmi.cmd | java -jar /vagrant/node/target/node-1.0.jar"
+      when: "'hmi' in ansible_hostname"

@@ -1,0 +1,10 @@
+
+ .oooooo..o   .oooooo.         .o.       oooooooooo.         .o.
+d8P'    `Y8  d8P'  `Y8b       .888.      `888'   `Y8b       .888.      
+Y88bo.      888              .8"888.      888      888     .8"888.     
+ `"Y8888o.  888             .8' `888.     888      888    .8' `888.    
+     `"Y88b 888            .88ooo8888.    888      888   .88ooo8888.   
+oo     .d8P `88b    ooo   .8'     `888.   888     d88'  .8'     `888.  
+8""88888P'   `Y8bood8P'  o88o     o8888o o888bood8P'   o88o     o8888o 
+
+        { version 1.0 - Type 'help' for more information. }

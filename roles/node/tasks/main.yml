@@ -1,0 +1,18 @@
+---
+# file: roles/node/main.yml
+# Configures the node as a HMI or RTU.
+
+  - name: Install Requirements
+    apt: name={{ item }} state=present
+    with_items:
+      - openjdk-8-jdk
+      - maven
+      - tmux
+      - htop
+
+  - name: Compile node if does not exist.
+    command: "mvn package"
+    args:
+      creates: "/vagrant/node/target/node-1.0-jar-with-dependencies.jar"
+      chdir: "/vagrant/"
+      

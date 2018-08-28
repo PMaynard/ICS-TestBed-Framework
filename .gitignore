@@ -1,0 +1,13 @@
+*.zip
+*.class
+.vagrant/
+*.swp
+*.log
+*.pcap 
+*.jar
+node/target/
+j60870/target/
+Vagrantfile
+*.retry
+*.iml
+*.idea
