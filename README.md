@@ -34,12 +34,18 @@ Build:
 Start up a RTU:
 
 	java -jar node/target/node-1.0.jar
-	script --file scripts/rtu.cmd
+	shell> rtu
+	shell> rtu-iec104port 2404
+	shell> rtu-listen 127.0.0.1
+	shell> run
 
 Start up a HMI: 
 
 	java -jar node/target/node-1.0.jar
-	script --file scripts/hmi.cmd
+	shell> hmi
+	shell> hmi-interval 1000
+	shell> remote-hosts 127.0.0.1
+	shell> run
 
 # Auto Deploy in VMs
 
