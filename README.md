@@ -65,4 +65,17 @@ Use the latest version of Vagrant over the pre-built/distribution packages as th
 	
 	cp Vagrantfile.default Vagrantfile
 	vagrant up
+	
+# Citation
+
+Please cite this framework using the following format: 
+
+	@conference{
+	 author   = "Peter Maynard and Kieran McLaughlin and Sakir Sezer",
+	 title 	  = "An Open Framework for Deploying Experimental SCADA Testbed Networks",
+	 journal  = "5th International Symposium for ICS & SCADA Cyber Security Research",
+	 year 	  = "2018"
+	}
+
+An example dataset can be found at: https://dx.doi.org/10.6084/m9.figshare.6133457.v1 
 
