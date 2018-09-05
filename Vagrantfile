@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
   config.vm.box_check_update = true
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = 3048
+    vb.memory = 512 
   end  
 
   config.vm.provision "ansible_local" do |ansible|
