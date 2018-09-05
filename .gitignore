@@ -11,3 +11,5 @@ Vagrantfile
 *.retry
 *.iml
 *.idea
+vagrant_image/packer_cache/
+vagrant_image/vagrant.box

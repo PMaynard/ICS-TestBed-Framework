@@ -1,0 +1,74 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install Requirements
+      apt: name={{ item }} state=present
+      with_items:
+        - openjdk-8-jdk
+        - maven
+        - tmux
+        - htop
+
+    - name: Configure the default Java to OpenJDK 8
+      alternatives:
+        name: java
+        path: /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+
+    # SSH daemon configuration.
+    - name: Configure SSH daemon.
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+      with_items:
+        - regexp: '^UseDNS'
+          line: 'UseDNS no'
+        - regexp: '^GSSAPIAuthentication'
+          line: 'GSSAPIAuthentication no'
+
+    # Vagrant SSH configuration.
+    - name: Configure Vagrant .ssh directory.
+      file:
+        path: /home/vagrant/.ssh
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: 0700
+
+    - name: Get Vagrant's public key.
+      get_url:
+        url: https://github.com/mitchellh/vagrant/raw/master/keys/vagrant.pub
+        dest: /home/vagrant/.ssh/authorized_keys
+        owner: vagrant
+        group: vagrant
+        mode: 0600
+
+    - name: Get VirtualBox version.
+      shell: cat /home/vagrant/.vbox_version
+      register: virtualbox_version
+
+    - name: Mount VirtualBox guest additions ISO.
+      mount:
+        name: /tmp/vbox
+        src: "/home/vagrant/VBoxGuestAdditions_{{ virtualbox_version.stdout }}.iso"
+        opts: loop
+        state: mounted
+        fstype: iso9660
+
+    - name: Run VirtualBox guest additions installation.
+      shell: sh /tmp/vbox/VBoxLinuxAdditions.run
+      failed_when: false
+
+    - name: Unmount VirtualBox guest additions ISO.
+      mount:
+        name: /tmp/vbox
+        src: "/home/vagrant/VBoxGuestAdditions_{{ virtualbox_version.stdout }}.iso"
+        state: absent
+        fstype: iso9660
+
+    - name: Delete VirtualBox guest additions ISO.
+      file:
+        path: "/home/vagrant/VBoxGuestAdditions_{{ virtualbox_version.stdout }}.iso"
+        state: absent

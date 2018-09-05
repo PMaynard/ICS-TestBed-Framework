@@ -1,21 +1,28 @@
 ---
 - hosts: all
   become: yes
-  tasks: 
-    - name: Configure for packaging
-      include_role:
-        name: vagrant-box
-      when: "'buildImage' in ansible_hostname"
+  tasks:
+    - name: Install Requirements
+      apt: name={{ item }} state=present
+      with_items:
+        - openjdk-8-jdk
+        - maven
+        - tmux
+        - htop
 
-    - name: Setup Environmnet for TestBed
-      include_role: 
-        name: node
-      when: "'buildImage' in ansible_hostname"
+    - name: Compile source code.
+      command: "mvn package"
+      args:
+        creates: "/vagrant/node/target/node-1.0.jar"
+        chdir: "/vagrant/"
+      when: "'rtu' in ansible_hostname or 'hmi' in ansible_hostname"
 
     - name: Startup RTU
-      shell: "tmux new -d cat /vagrant/scripts/rtu.cmd | java -jar /vagrant/node/target/node-1.0.jar"
+      shell: "tmux new -d java -jar /vagrant/node/target/node-1.0.jar && tmux send script SPACE /vagrant/scripts/rtu.cmd ENTER"
+      become_user: vagrant 
       when: "'rtu' in ansible_hostname"
 
     - name: Startup HMI
-      shell: "tmux new -d java -jar cat /vagrant/scripts/hmi.cmd | java -jar /vagrant/node/target/node-1.0.jar"
+      shell: "tmux new -d java -jar /vagrant/node/target/node-1.0.jar && tmux send script SPACE /vagrant/scripts/hmi.cmd ENTER"
+      become_user: vagrant 
       when: "'hmi' in ansible_hostname"

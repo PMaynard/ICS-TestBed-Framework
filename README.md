@@ -29,7 +29,7 @@ Clone the repository and install the required dependencies:
 Build: 
 
 	mvn clean package
-	mvn package -Dmaven.test.skip=true # Skip tests.
+	mvn package -DskipTests # Skip tests.
 
 Start up a RTU:
 
@@ -51,7 +51,7 @@ Start up a HMI:
 
 The default configuration profile will deploy 1 HMI and 4 RTUs. The HMI will integrate the RTUs using the IEC104 and OPC-UA. The RTUs are configured to return random process data. 
 
-## Prerequisites 
+## Prerequisites (Vagrant+VirtualBox)
 
 Use the latest version of Vagrant over the pre-built/distribution packages as these scripts use features from the latest versions of Vagrant. *Should be fine if using Ubuntu 18.04.1 LTS*.
 
@@ -61,11 +61,70 @@ Use the latest version of Vagrant over the pre-built/distribution packages as th
 	bundle --binstubs exec
 	ln -sf /opt/vagrant/exec/vagrant /usr/local/bin/vagrant 
 
+## [OPTIONAL] Create VM Image
+
+This is an optional development step. It builds a virtual machine image, pre-configured to run the testbed nodes. If you don't want to create the latest version, the default option is get a stable image from Vagrant's image repository which stays in step with the master branch. 
+
+The packer is used to create an image suitable for VirtualBox and Vagrant:
+
+	cd vagrant_image
+	packer build vagrant-node.json
+	vagrant box add testbed-node vagrant.box
+
 ## Deploy
-	
-	cp Vagrantfile.default Vagrantfile
+
+**WARNING** You will need at least 4GB of free RAM.
+
+Update the Vagrantfile with any additional information, such as static IP address and RAM usage.
+
+The default IP settings are ```10.50.50.*``` .200 for HMI and 101-105 for RTUs. The default RAM per VM is 512MB. 
+
 	vagrant up
-	
+	vagrant ssh hmi
+	vagrant ssh rtu-1 # 1-5
+	vagrant halt
+	vagrant destroy 
+
+# Example Dataset
+
+An example dataset was created, using the default deployment configuration. PCAPs can be downloaded from [here](https://dx.doi.org/10.6084/m9.figshare.6133457.v1). The IEC104 MITM was performed using the ettercap plugin located [here](https://github.com/PMaynard/ettercap-104-mitm)
+
+-   **\[Host-SCAN 13:45\]**: Basic network reconnaissance using a Nmap
+    network wide scan. CMD: 'nmap -sn 10.50.50.\*'
+
+-   **\[Host-SCAN 13:47\]**: Basic network reconnaissance looking for
+    accessible [IEC104]{acronym-label="IEC104"
+    acronym-form="singular+short"} servers. CMD: 'nmap 10.50.50.\* -p
+    2404'
+
+-   **\[Host-SCAN 13:47\]**: Full port scan of identified
+    [RTUs]{acronym-label="RTU" acronym-form="plural+short"} nodes. CMD:
+    'nmap 10.50.50.101-105 -A'
+
+-   **\[Host-SCAN 13:49\]**: An active [IEC104]{acronym-label="IEC104"
+    acronym-form="singular+short"} scan which probes the nodes using the
+    [IEC104]{acronym-label="IEC104" acronym-form="singular+short"}
+    protocol[^1]. CMD: 'nmap -Pn -n -d --script iec-identify.nse
+    --script-args='iec-identify.timeout=500' -p 2404 10.50.50.101-105'
+
+-   **\[Host-MITM 14:19\]**: Performs a [MITM]{acronym-label="MITM"
+    acronym-form="singular+short"} on RTU-1 and the HMI. CMD: 'ettercap
+    -i enp0s8 -T -M arp -P spoof\_104 /10.50.50.101/ /10.50.50.150/'
+
+A numerical break down of the dataset is shown below:
+
+  Host        IP             IEC104   OPC-UA   Other    **Total**
+  ----------- -------------- -------- -------- -------- -----------
+  HMI         10.50.50.150   26,158   0        17,688   43,846
+  Historian   10.50.50.151   0        14,695   14,927   29,622
+  RTU-1       10.50.50.101   3,592    2,940    5,543    12,075
+  RTU-2       10.50.50.102   3,665    2,941    5,876    12,482
+  RTU-3       10.50.50.103   3,668    2,940    5,793    12,404
+  RTU-4       10.50.50.104   3,690    2,940    5,771    12,404
+  RTU-5       10.50.50.105   3,576    930      7,933    12,442
+  MITM        10.50.50.99    2,390    0        3,449    5,839
+  SCAN        10.50.50.3     15       0        28,351   28,366
+
 # Citation
 
 Please cite this framework using the following format: 
@@ -77,5 +136,6 @@ Please cite this framework using the following format:
 	 year 	  = "2018"
 	}
 
-An example dataset can be found at: https://dx.doi.org/10.6084/m9.figshare.6133457.v1 
+The dataset can be cited using DOI: [10.6084/m9.figshare.6133457.v1](https://dx.doi.org/10.6084/m9.figshare.6133457.v1)
 
+The full paper can be found at: <https://petermaynard.co.uk/publication/an-open-framework-for-deploying-experimental-scada-testbed-networks/>

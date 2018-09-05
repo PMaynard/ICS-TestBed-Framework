@@ -1,0 +1,70 @@
+{
+	"builders": [
+		{
+			"type": "virtualbox-iso",
+			"boot_command": [
+				"<esc><wait>",
+				"<esc><wait>",
+				"<enter><wait>",
+				"/install/vmlinuz<wait>",
+				" auto<wait>",
+				" console-setup/ask_detect=false<wait>",
+				" console-setup/layoutcode=gb<wait>",
+				" console-setup/modelcode=pc105<wait>",
+				" debconf/frontend=noninteractive<wait>",
+				" debian-installer=en_GB<wait>",
+				" fb=false<wait>",
+				" initrd=/install/initrd.gz<wait>",
+				" kbd-chooser/method=gb<wait>",
+				" keyboard-configuration/layout=gb<wait>",
+				" keyboard-configuration/variant=gb<wait>",
+				" locale=en_GB<wait>",
+				" netcfg/get_domain=vm<wait>",
+				" netcfg/get_hostname=vagrant<wait>",
+				" grub-installer/bootdev=/dev/sda<wait>",
+				" noapic<wait>",
+				" preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>",
+				" -- <wait>",
+				"<enter><wait>"
+			],
+			"headless": true, 
+			"http_directory": "./",
+			"guest_os_type": "Ubuntu_64",
+			"iso_url": "http://cdimage.ubuntu.com/ubuntu/releases/bionic/release/ubuntu-18.04.1-server-amd64.iso",
+			"iso_checksum": "a5b0ea5918f850124f3d72ef4b85bda82f0fcd02ec721be19c1a6952791c8ee8",
+			"iso_checksum_type": "sha256",
+			"ssh_username": "vagrant",
+			"ssh_password": "vagrant",
+			"shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
+			"guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+			"virtualbox_version_file": ".vbox_version",
+			"vm_name": "packer-testbed-node-x86_64"
+		}],
+	"provisioners": [
+		{
+			"type": "shell",
+			"execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+			"script": "scripts/ansible.sh"
+		},
+		{
+			"type": "shell",
+			"execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+			"script": "scripts/setup.sh"
+		},
+		{
+			"type": "ansible-local",
+			"playbook_file": "vagrant.yml"
+		},
+		{
+			"type": "shell",
+			"execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+			"script": "scripts/cleanup.sh"
+		}
+	],
+	"post-processors": [
+		{
+			"output": "vagrant.box",
+			"type": "vagrant"
+		}
+	]
+}

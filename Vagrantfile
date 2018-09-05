@@ -2,29 +2,29 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box_check_update = false
-
-  # TODO: Hack because the packaged vm is messy.
+  config.vm.box_check_update = true
   config.vm.provider "virtualbox" do |vb|
-    vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
-    vb.memory = 512
+    vb.memory = 3048
   end  
 
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
+    ansible.compatibility_mode = "2.0"
   end
   
   (1..5).each do |i|
     config.vm.define "rtu-#{i}" do |node|
       node.vm.hostname = "rtu"
       node.vm.box = "pmaynard/testbed-node"
-      node.vm.network "public_network", ip: "10.50.50.10#{i}", bridge: "br0" 
+      # node.vm.box = "testbed-node" # [OPTIONAL] If using a locally created image.
+      node.vm.network "public_network", ip: "10.50.50.10#{i}"
     end
   end
 
   config.vm.define "hmi" do |hmi|
     hmi.vm.hostname = "hmi"
     hmi.vm.box = "pmaynard/testbed-node"
-    hmi.vm.network "public_network", ip: "10.50.50.200", bridge: "br0"
+    # hmi.vm.box = "testbed-node" # [OPTIONAL] If using a locally created image.
+    hmi.vm.network "public_network", ip: "10.50.50.200"
   end
 end
