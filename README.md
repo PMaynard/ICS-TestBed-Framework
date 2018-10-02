@@ -65,7 +65,7 @@ Use the latest version of Vagrant over the pre-built/distribution packages as th
 
 This is an optional development step. It builds a virtual machine image, pre-configured to run the testbed nodes. If you don't want to create the latest version, the default option is get a stable image from Vagrant's image repository which stays in step with the master branch. 
 
-The packer is used to create an image suitable for VirtualBox and Vagrant:
+[Packer](https://www.packer.io/) is used to create a virtual machine image suitable for VirtualBox and Vagrant:
 
 	cd vagrant_image
 	packer build vagrant-node.json
@@ -77,7 +77,7 @@ The packer is used to create an image suitable for VirtualBox and Vagrant:
 
 Update the Vagrantfile with any additional information, such as static IP address and RAM usage.
 
-The default IP settings are ```10.50.50.*``` .200 for HMI and 101-105 for RTUs. The default RAM per VM is 512MB. 
+The default IP settings are ```10.50.50.*```. ```.200``` is used for HMI and ```101-105``` for RTUs. The default RAM allocated per VM is 512MB. 
 
 	vagrant up
 	vagrant ssh hmi
