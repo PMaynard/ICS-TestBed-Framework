@@ -125,6 +125,11 @@ A numerical break down of the dataset is shown below:
 |MITM|10.50.50.99|2,390|0|3,449|5,839|
 |SCAN|10.50.50.3|15|0|28,351|28,366|
 
+# Related Projects
+
+- https://github.com/flesueur/mi-lxc
+- https://github.com/nsec/the-internet
+
 # Citation
 
 Please cite this framework using the following format: 
